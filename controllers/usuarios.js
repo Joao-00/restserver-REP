@@ -29,6 +29,10 @@ const usuariosPost = async(req, res = response) => {
     const {nombre, correo, password, rol} = req.body;
     const usuario = new Usuario( {nombre, correo, password, rol} );
 
+    // Encriptar la contraseña
+    const salt = bcryptjs.genSaltSync();
+    usuario.password = bcryptjs.hashSync( password, salt );
+
     //guardar db
     await usuario.save();
 
@@ -52,10 +56,7 @@ const usuariosPut = async(req, res) => {
 
     const usuario = await Usuario.findByIdAndUpdate(id, resto);
 
-    res.json({
-        msg: 'put API - controlador',
-        usuario
-    });
+    res.json(usuario);
 }
 
 
@@ -65,6 +66,7 @@ const usuariosDelete = async (req, res) => {
 
     //fisicamente lo boramos
     //const usuario = await Usuario.findByIdAndDelete(id);
+    
     const usuario = await Usuario.findByIdAndUpdate(id, {estado: false});
 
     res.json(usuario);
